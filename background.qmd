@@ -1,0 +1,13 @@
+---
+title: <span style="color:#3C1053;">a<span>
+subtitle: ""
+author: ""
+institute: ""
+footer: ""
+format:
+  warwickpres-revealjs: default
+menu: false
+# To remove logo from title slide, comment out the following line in
+# in `"_extensions/Warwick-Stats-Resources/warwickpres/_extension.yml"`: 
+#   `data-background-image: warwick-logo-white.png`
+---

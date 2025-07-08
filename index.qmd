@@ -1,0 +1,889 @@
+---
+title: Using R for Research Software Engineering
+subtitle: HiRSE Summer of Programming Languages <br> July 2025
+author: Heather Turner
+institute: University of Warwick
+footer: <https://hturner.github.io/HiRSE-R-for-research-software>
+format:
+  warwickpres-revealjs: default
+execute:
+  download: true
+  cache: true
+# To remove logo from title slide, comment out the following line in
+# in `"_extensions/Warwick-Stats-Resources/warwickpres/_extension.yml"`: 
+#   `data-background-image: warwick-logo-white.png`
+---
+
+
+# R as a programming language {.inverse}
+
+:::{.notes}
+Intro to me.
+
+For this session of HiRSE Summer of Programming Languages I'll be talking about..
+:::
+
+:::{.notes}
+The first thing we need to bear in mind, is that R is a little different from 
+other programming languages, like Fortran, C++ or Rust.
+
+In fact...
+:::
+
+## {.center}
+
+> no developer would mistake R for a programming language
+
+-- _Simon Urbanek, R Core developer, R Journal 13(2), 22-24, [10.32614/RJ-2021-111](http://dx.doi.org/110.32614/RJ-2021-111)_
+
+<br>
+
+::: {.fragment}
+> R has a simple goal: To turn ideas into software, quickly and faithfully 
+
+-- _John Chambers, Programming with data: A guide to the S language, 
+  ISBN 978-0-387-98503-9._
+:::
+
+:::{.notes}
+What's he getting at here?
+:::
+
+## R is an Algorithm Interface
+
+R is a descendant of S, which was designed as an algorithm interface
+
+::: {.center-h}
+![](algorithm_interface.png){fig-align="center" fig-alt="A hand-drawn sketch initialled JMC, titled Algorithm Interface, dated 5/5/76. In the middle, a circle labelled ABC, in the margin defined as a general (FORTRAN) algorithm. Around the circle, a rectangle, labelled XABC, in the margin defined as a Fortran subroutine to provide an interface between ABC and language and/or utility programs" width=50%}
+:::
+
+[Initial design sketch for "The System" by John Chambers, lead developer of S]{.smaller70}<br>
+[From: [Interfaces, Efficiency and Big Data](https://youtu.be/_hcpuRB5nGs), useR! 2014]{.smaller70}
+
+:::{.notes}
+This has a big impact on when we would consider using R for developing research 
+software
+:::
+
+## When might we consider using R for research software?
+
+* Prototyping
+* To provide a user-friendly interface
+    - R interface for data analytic scripting
+    - R-based dashboard/web application for non-coders
+* As a glue language
+    - Interfaces with other languages
+    - Creating a full pipeline from raw data to data product
+
+:::{.notes}
+So what makes R good for prototyping?
+:::
+
+# Prototyping {.inverse}
+
+## R is a high-level language
+
+R comes with functions for common tasks in **scientific computing**, e.g, 
+
+Linear algebra 
+
+```r
+M %*% N
+svd(M)
+```
+
+Random number generation and sampling
+
+```r
+rnorm(100, mean = 0, sd = 1)
+sample(1:100, size = 10, replace = FALSE)
+```
+
+Optimization
+
+```r
+optimize(function(x) {(x - 1/3)^2}, 
+         interval = c(0, 1))
+```
+
+:::{.notes}
+linear algebra often using LAPACK by default (includes reference BLAS)
+:::
+
+## R is a high-level language (ctd.)
+
+R comes with functions for common tasks in **data analytics**, e.g, 
+
+Reading data
+
+```r
+study_data <- read.csv("study_data.csv", header = TRUE)
+```
+
+Data manipulation
+
+```r
+sort(study_data$variable1, decreasing = TRUE)
+as.numeric(sub("ID", "", study_data$id))
+```
+
+Statistics and data visualisation
+
+```r
+lm(response ~ variable1 + variable2, data = study_data)
+kmeans(study_data[c("variable1", "variable2")], centers = 2)
+plot(response ~ variable1, data = study_data)
+```
+
+## Access more functions via R packages
+
+R packages provide additional data structures and functions, e.g.
+
+```{r}
+#| eval: false
+install.packages("xml2", quiet = TRUE)
+library(xml2)
+exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+class(exchange_rates)
+```
+
+The default repository is CRAN, which has >20,000 packages.
+
+## R still has building blocks for programming
+
+* Basic data types
+    * logical
+    * numeric (integer, double, complex)
+    * character
+* Control flow
+    * if/else and switch
+    * for and while loops
+* Operators
+    * mathematical
+    * logical
+
+:::{.notes}
+building blocks on top of function calls - not just procedural like some 
+statistical software
+:::
+
+## R facilitates operating at a higher level
+
+::: {.panel-tabset}
+
+### Vectors and matrices
+
+```{r}
+x <- 1:3
+log(x)
+```
+
+```{r}
+M <- matrix(c(1, 0, 1, 0), nrow = 2, ncol = 2)
+M == 1
+```
+
+### Dates
+
+```{r}
+date_series <- seq.Date(from = as.Date("2025-01-01"), 
+                        to = as.Date("2025-01-10"), by = "day")
+date_series - date_series[1]
+```
+ 
+
+### Lists and data frames
+
+```{r}
+list_data <- list(x = 1:3, M = matrix(1:4))
+lapply(list_data, mean)
+```
+
+```{r}
+summary(trees)
+```
+
+:::{.notes}
+vectors and matrices are like arrays in C, but many R functions and operations
+can be applied across the whole vector or matrix at once
+:::
+
+:::
+
+## R is an interpreted language
+
+We can easily explore interactively when developing a function
+
+::: {.r-stack .center-h}
+![](interactive1.png){.fragment height=520px}
+
+![](interactive2.png){.fragment height=520px}
+
+![](interactive3.png){.fragment height=520px}
+
+![](interactive4.png){.fragment height=520px}
+
+![](interactive5.png){.fragment height=520px}
+
+![](interactive6.png){.fragment height=520px}
+
+![](interactive6b.png){.fragment height=520px}
+
+![](interactive7.png){.fragment height=520px}
+
+![](interactive8.png){.fragment height=520px}
+
+![](interactive9.png){.fragment height=520px}
+
+![](interactive10.png){.fragment height=520px}
+
+![](interactive11.png){.fragment height=520px}
+
+![](interactive12.png){.fragment height=520px}
+
+![](interactive13.png){.fragment height=520px}
+
+![](interactive14.png){.fragment height=520px}
+
+![](interactive15.png){.fragment height=520px}
+:::
+
+::: {.notes}
+skip image 21 as can test groupSort interactively in console
+:::
+
+## Speed up with Compiled Code
+
+A disadvantage of high-level, interpreted languages is they can be slow.
+
+Since R is designed as an algorithm interface, we can speed up bottlenecks 
+with compiled code.
+
+Two R packages make this easier for R programmers:
+
+ * **Rcpp**
+ * **quickr**
+
+## Speeding up with Rcpp
+
+Suppose we have an R function to compute the Manhattan distance between two points
+
+$$d  = \sum^n_i | a_i - b_i| $$
+
+::: {.panel-tabset}
+
+### R
+
+```{.r filename="ManhattanR.R"}
+ManhattanR <- function(a, b){
+    sum(abs(a - b))
+}
+```
+
+### C++
+
+```{.r filename="ManhattanC.cpp"}
+#include <Rcpp.h>
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+double ManhattanC(NumericVector a, NumericVector b) {
+    return sum(abs(a - b));
+}
+```
+
+<br>
+
+```{r}
+#| message: false
+Rcpp::sourceCpp("ManhattanC.cpp")
+a <- c(1, 0)
+ManhattanC(a, a + c(1, 7))
+```
+
+:::
+
+::: {.fragment}
+**Rcpp** provides data structures and functions to allow us to write R-like C++
+:::
+
+## Speeding up with quickr 
+
+The `quickr::quick()` function transpiles R code to Fortran
+
+::: {.panel-tabset}
+
+### R
+
+```{.r filename="ManhattanR.R"}
+ManhattanR <- function(a, b){
+    sum(abs(a - b))
+}
+```
+
+### Fortran
+
+```{r}
+library(quickr)
+ManhattanF <- quick(function(a, b){
+    declare(type(a = double(NA)),
+            type(b = double(NA)))
+    out <- sum(abs(a - b))
+    out
+})
+a <- c(1, 0)
+ManhattanF(a, a + c(1, 7))
+```
+
+:::
+
+# User-friendly interfaces {.inverse}
+
+## R Packages
+
+The best practice for sharing R functions with other R users is to create an R package.
+
+An R package minimally includes
+
+* DESCRIPTION defining authors, version, license
+* NAMESPACE defining imports and exports
+* /R directory of R scripts with function definitions
+
+::: {.notes}
+for other R users
+:::
+
+## Creating an R Package
+
+An R package can be created from scratch or from an existing directory
+
+::: {.r-stack .center-h}
+![](package1.png){.fragment}
+
+![](package2.png){.fragment width=777px}
+
+![](package3.png){.fragment}
+
+![](package4.png){.fragment height=520px}
+
+![](package5.png){.fragment height=520px}
+:::
+
+## Exporting Functions
+
+User functions should be documented and exported
+
+```{.r filename="groupSort.R" code-line-numbers="|10"}
+#' Order a Variable by a Grouping Variable
+#'
+#' Order the elements of a vector by the values of a grouping variable.
+#'
+#' @param x the variable to order
+#' @param g the grouping variable
+#' @param decreasing logical: if `TRUE`, order by decreasing values of `g`
+#'
+#' @returns A variable with the values of `x` sorted by the values of `g`.
+#' @export
+#' @examples
+#' x <- 11:19
+#' g <- rep(1:3, length.out = 9)
+#' groupSort(x, g)
+groupSort <- function(x, g, decreasing = FALSE) {
+```
+
+:::{.fragment}
+Generate the documentation with `devtools::document()`
+:::
+
+## Sharing an R package
+
+If we put the package in a git repos, those with access can install from 
+R, e.g.
+
+```{r}
+#| message: false
+#| cache: true
+remotes::install_github("hturner/demopkg")
+library(demopkg)
+groupSort(1:11, rep(1:3, length.out = 9))
+```
+
+:::{.callout-tip .fragment}
+Credentials for private git repos can be set with `gitcreds::set()`
+:::
+
+## Sharing R package binaries
+
+Create an r-developer.r-universe.dev repo on GitHub and add
+
+```{.json filename="packages.json"}
+[
+    {
+        "package": "demopkg",
+        "url": "https://github.com/r-developer/demopkg"
+    }
+]
+```
+
+Install the r-universe app on GitHub. Then users can install a binary version with
+
+```r
+install.packages("demopkg", repos = c(
+  `R developer` = 'https://r-developer.r-universe.dev',
+  CRAN = 'https://cloud.r-project.org'))
+```
+
+:::{.callout-tip .fragment}
+For private packages use `devtools::build()`, plus [win-builder.r-project.org](https://win-builder.r-project.org) and/or [mac.r-project.org/macbuilder](https://mac.r-project.org/macbuilder) if required.
+:::
+
+::: {.notes}
+CRAN still needed for package dependencies
+:::
+
+## Keeping an interactive workflow
+
+We can keep an interactive workflow with `devtools::load_all()`
+
+::: {.r-stack .center-h}
+![](demo27.png){height=520px}
+
+![](demo28.png){.fragment height=520px}
+
+![](demo29.png){.fragment height=520px}
+
+![](demo30.png){.fragment height=520px}
+
+![](demo31.png){.fragment height=520px}
+
+![](demo32.png){.fragment height=520px}
+
+![](demo33.png){.fragment height=520px}
+:::
+
+## Designing an interface for non-coders
+
+We can quickly design a Shiny UI with `designer::designApp()`
+
+::: {.r-stack .center-h}
+![](designer1.png){height=520px}
+
+![](designer2.png){.fragment height=520px}
+
+![](designer3.png){.fragment height=520px}
+
+![](designer4.png){.fragment height=520px}
+
+![](designer5.png){.fragment height=520px}
+
+![](designer6.png){.fragment height=520px}
+
+![](designer7.png){.fragment height=520px}
+
+![](designer8.png){.fragment height=520px}
+
+![](designer9.png){.fragment height=520px}
+:::
+
+
+::: {.notes}
+don't forget to add input id when designing!
+:::
+
+## Writing a Shiny App {auto-animate="true"}
+
+We can use the copied code to start creating a Shiny app
+
+```{.r filename="app.R"}
+library(shiny)
+
+ui <-
+```
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R"}
+library(shiny)
+
+ui <- bootstrapPage(
+  title = "Shiny Application",
+  theme = bslib::bs_theme(4),
+  h1(
+    "Group Sort"
+  ),
+  fileInput(
+    inputId = "file",
+    label = "Choose file"
+  ),
+  inputPanel(
+    textInput(
+      inputId = "x",
+      label = "label"
+    ),
+    textInput(
+      inputId = "g",
+      label = "label"
+    ),
+    radioButtons(
+      inputId = "order",
+      label = "",
+      choices = c("Increasing", "Decreasing")
+    )
+  ),
+  DT::DTOutput(
+    outputId = "table"
+  )
+)
+```
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R" startFrom=31}
+)
+
+server <- function(input, output, session) {
+
+}
+```
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R" startFrom=31}
+)
+
+server <- function(input, output, session) {
+    # Reactive value to store the uploaded data
+    uploaded_data <- reactive({
+        req(input$file)
+        data <- read.csv(input$file$datapath, header = TRUE)
+        return(data)
+    })
+}
+```
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R" startFrom=39}
+    })
+
+    # Reactive value for processed data
+    processed_data <- reactive({
+        req(uploaded_data())
+
+        data <- uploaded_data()
+        if (all(c(input$x, input$g) %in% names(data))){
+            out <- vector(mode = "list")
+            out[[input$x]] <- demopkg::groupSort(data[[input$x]],
+                                                 data[[input$g]],
+                                                 input$order == "Decreasing")
+            return(as.data.frame(out))
+        }
+    })
+```
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R" startFrom=53}
+    })
+
+    # Render the data table
+    output$table <- DT::renderDT({
+        req(processed_data())
+
+        DT::datatable(processed_data())
+    })
+}
+```
+
+:::{.callout-tip .fragment}
+Could pass `ui` to Shiny assistant https://gallery.shinyapps.io/assistant 
+to get an initial draft for `server`
+:::
+
+## Writing a Shiny App {auto-animate="true"}
+
+```{.r filename="app.R" startFrom=53}
+    })
+
+    # Render the data table
+    output$table <- DT::renderDT({
+        req(processed_data())
+
+        DT::datatable(processed_data())
+    })
+}
+
+# Create the Shiny app
+shinyApp(ui = ui, server = server)
+```
+
+## Run Shiny App Locally
+
+A Shiny app can be run locally with `shiny::runApp("dir/containing/app.R")`
+
+::: {.r-stack .center-h}
+![](app1.png){height=520px}
+
+::: {.fragment}
+![](app2.png){.fragment height=520px}
+:::
+:::
+
+## Deploying a Shiny App
+
+Many options, the following are relatively simple and free
+
+| Route     | R Packages Source | Hosting                  |
+|-----------|-------------------|---------------------------|
+| Posit Cloud Connect | CRAN, Bioconductor, Public GitHub  | Cloud server |
+| shinylive | CRAN, Bioconductor, R-universe  | Self-hosted static HTML, GitHub Pages |
+| shinyapps.io | CRAN, Bioconductor, Public/Private GitHub  | Cloud server|
+
+Other options are paid (premium versions of shinyapps.io, Posit Cloud Connect 
+or more work (self-hosted ShinyProxy).
+
+## A Recipe for Shiny App in R Package in Private GitHub
+
+1. Sign up for shinyapps.io.
+2. Go to Account > Tokens > Show and copy code to run in R
+    - Allow access to private GitHub repos via Account > Profile > Update Authentification
+4. Save `app.R` in `inst/shiny` of your R package.
+5. Commit and push. 
+6. Install the package from GitHub
+   ```r
+   remotes::install_github("hturner/demopkg")
+   ```
+7. Deploy, using sha of git commit in URL  
+   ```r
+   rsconnect::deployApp("inst/shiny",
+                        appName = packageDescription("demopkg")$RemoteSha)
+   ```
+
+## Share by Obscure URL
+
+Try it out!
+
+<https://supershiny.shinyapps.io/e09f21d4cec5370c2afc656b0c06a6cd399e207d/>
+
+![](deployed_app.png){fig-align="center"}
+
+# R as a glue language {.inverse}
+
+## Interfacing with standard C++
+
+Suppose we already had a C++ function to compute the Manhattan distance 
+
+$$d  = \sum^n_i | a_i - b_i| $$
+
+```cpp
+#include <vector>
+#include <cmath>
+
+double Manhattan(const std::vector<double>& a, const std::vector<double>& b) {
+    int n = a.size();
+    double out = 0.0;  
+
+    for (int i = 0; i < n; ++i) {
+        out += std::abs(a[i] - b[i]);
+    }
+
+    return out;
+}
+```
+
+## Interfacing with standard C++ using Rcpp
+
+Within the package source directory run `use_rcpp("Manhattan")`
+
+![](demo36.png){fig-align="center" height=520px}
+
+## Interfacing with standard C++ using Rcpp (ctd.)
+
+As directed, create `demopkg-package.R`
+
+```{.r filename="demopkg-package.R"}
+## usethis namespace: start
+#' @importFrom Rcpp sourceCpp
+#' @useDynLib demopkg, .registration = TRUE
+## usethis namespace: end
+NULL
+```
+
+## Interfacing with standard C++ using Rcpp (ctd.) {.auto-animate}
+
+Now add the existing C++ code to `Manhattan.cpp`
+
+```{.cpp filename="Manhattan.cpp" code-line-numbers="4:16"}
+#include <Rcpp.h>
+using namespace Rcpp;
+
+#include <vector>
+#include <cmath>
+
+double Manhattan(const std::vector<double>& a, const std::vector<double>& b) {
+    int n = a.size();
+    double out = 0.0;
+
+    for (int i = 0; i < n; ++i) {
+        out += std::abs(a[i] - b[i]);
+    }
+
+    return out;
+}
+```
+
+## Interfacing with standard C++ using Rcpp (ctd.) {.auto-animate}
+
+Add `// [[Rcpp::export]]` so that `devtools::document()` creates an R wrapper
+
+::: {.panel-tabset}
+
+### Manhattan.cpp
+
+```{.cpp filename="Manhattan.cpp"}
+#include <vector>
+#include <cmath>
+#include <Rcpp.h>
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+double Manhattan(const std::vector<double>& a, const std::vector<double>& b) {
+    int n = a.size();
+    double out = 0.0;
+
+    for (int i = 0; i < n; ++i) {
+        out += std::abs(a[i] - b[i]);
+    }
+```
+
+### RcppExports.R
+
+```{.r filename="RcppExports.R"}
+# Generated by using Rcpp::compileAttributes() -> do not edit by hand
+# Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
+
+Manhattan <- function(a, b) {
+    .Call(`_demopkg_Manhattan`, a, b)
+}
+```
+
+:::
+
+## Interfacing with standard C++ using Rcpp (ctd.) {.auto-animate}
+
+To export the R function, document in the `.cpp` file
+
+```{.cpp filename="Manhattan.cpp" startFrom=4 code-line-numbers="|12"}
+using namespace Rcpp;
+
+//' Order a Variable by a Grouping Variable
+//'
+//' Order the elements of a vector by the values of a grouping variable.
+//'
+//' @param x the variable to order
+//' @param g the grouping variable
+//' @param decreasing logical: if `TRUE`, order by decreasing values of `g`
+//'
+//' @returns A variable with the values of `x` sorted by the values of `g`.
+//' @export
+//' @examples
+//' x <- 11:19
+//' g <- rep(1:3, length.out = 9)
+//' groupSort(x, g)
+// [[Rcpp::export]]
+double Manhattan(const std::vector<double>& a, const std::vector<double>& b) {
+```
+
+## Interfacing with other languages
+
+R can interface with
+
+ * C (see [Now You C Me blog post](https://blog.davisvaughan.com/posts/2019-03-02-now-you-c-me/) by Davis Vaughan)
+ * Fortran (via **dotCall64**, see [SoftwareX paper](https://doi.org/10.1016/j.softx.2018.06.002))
+ * Rust (via **extendr**, see [Using Rust code in R packages](https://extendr.github.io/rextendr/articles/package.html) vignette)
+ * Java (via **rJava**, see [rJava: Running Java from R, and Building R Packages Wrapping a .jar](https://datawarrior.wordpress.com/2016/09/10/rjava-running-java-from-r-and-building-r-packages-wrapping-a-jar/) blog post by Kwan-Yuet (Stephen) Ho)
+ * Python (via **reticulate** see [Using Reticulate in an R Package vignette](https://t-kalinowski.github.io/reticulate/articles/package.html))
+ * Julia (via **JuliaConnectoR**, see [JSS article](https://doi.org/10.18637/jss.v101.i06))
+ * Javascript (see e.g. [Javascript for R book](https://book.javascript-for-r.com))
+
+## R for Data Gathering and Reporting
+
+ R can handle data from the start of a research study...
+
+ * Gathering data
+    * From public data sources: [>100 rOpenSci packages for data access](https://ropensci.org/packages/data-access/), [~1000 Bioconductor packages for Omics annotation data](https://bioconductor.org/packages/release/BiocViews.html#___AnnotationData)
+    * From databases: e.g., PostgreSQL, Apache Spark, MongoDB, BigQuery, DuckDB. 
+    See  [CRAN Task View: Databases with R](https://cran.r-project.org/web/views/Databases.html)
+* Data wrangling
+    * rOpensci packages: [>40 for data extraction](https://ropensci.org/packages/data-extraction/), [9 for image and audio processing](https://ropensci.org/packages/image-processing/)
+    * General processing: **data.table**, **dplyr**
+    * [CRAN Task View: Missing Data](https://cran.r-project.org/web/views/MissingData.html)
+
+## R for Analysis and Reporting
+
+... to the production of research outputs
+
+* Analysis
+    * [CRAN Task Views](https://cran.r-project.org/web/views/) cover fields of statistics (e.g. Bayesian statistics, Spatial Statistics, Survival Analysis) and domains (Clinical trials, Finance, Official statistics)
+    * [Bioconductor repository](https://bioconductor.org) for analysing omics data
+* Reporting
+    * [Quarto](https://quarto.org) for creating documents, dashboards, websites based on R, Python, Julia and ObservableJS
+    * Shiny for dashboards, interactive web/mobile apps.
+
+## Data pipelines/workflows
+
+Orchestrating all the steps of a workflow in R supports reproducible research.
+
+A *data-scientist* might do this via
+
+* R script
+* Quarto document
+    * [Parameterized reports](https://quarto.org/docs/computations/parameters.html) for multiple analysis with different inputs
+* Pipeline tool similar to Make, e.g. **targets** (see [CRAN Task View: Reproducible Research](https://cran.r-project.org/web/views/ReproducibleResearch.html))
+
+An *RSE* might contribute via
+
+* An R package to perform an specific step in the analysis
+* A Shiny app to implement a standard workflow from start to finish
+
+# Ecosystem and Community {.inverse}
+
+## Ecosystem
+
+* Large ecosystem of packages for data science to build on and integrate with
+    * Strengths: Bioinformatics, Spatial Statistics, Epidemiology, 
+    Time Series, Survey Analysis, Statistical Modelling and Data visualisation
+    * Weaknesses: ML, Deep Learning, Scientific Computing
+* Supportive of software development in research context
+    * Package curation: CRAN, Bioconductor, rOpenSci
+    * Journals: [R Journal](https://journal.r-project.org), [Journal of Statistical Software](https://www.jstatsoft.org/index)
+    * Conferences and meetups: [useR! Conference](https://www.r-project.org/conferences/), [posit::conf](https://posit.co/conference/), [Listing of R events](https://jumpingrivers.github.io/meetingsR/)
+
+## Community
+
+* Wide community of users/developers in academia, non-profit/government, industry
+* Wealth of free online learning material, e.g. [R Packages](https://r-pkgs.org) 
+book, blogs
+* Good support via online forums: [Posit community](https://forum.posit.co), [Bioconductor forum](https://support.bioconductor.org), [rOpenSci](https://discuss.ropensci.org/), #r-users on [RSE Slack](https://society-rse.org/get-involved/slack-faq/)
+    
+## Summary
+
+* R is good for
+    * Fast development
+    * Creating user-friendly code/no code interfaces
+    * Interfacing with other languages
+    * Reproducible data-analytic workflows
+* Intended user community, area of data science and domain of application can 
+affect whether it is the best choice
+    
+:::{.notes}
+Possibly to add, but probably not space:
+
+- R is forgiving (syntax, memory)
+- parallelisation as another way to speed up code
+- shinydraw
+- license issues (GPL)
+- tests and other bits to add into packages
+:::
+
+
