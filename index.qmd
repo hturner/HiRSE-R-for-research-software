@@ -1,6 +1,6 @@
 ---
 title: Using R for Research Software Engineering
-subtitle: HiRSE Summer of Programming Languages <br> July 2025
+subtitle: HiRSE Summer of Programming Languages <br> Summer 2025
 author: Heather Turner
 institute: University of Warwick
 footer: <https://hturner.github.io/HiRSE-R-for-research-software>
@@ -139,15 +139,27 @@ plot(response ~ variable1, data = study_data)
 
 R packages provide additional data structures and functions, e.g.
 
-```{r}
+```{r install-xml2-code}
 #| eval: false
 install.packages("xml2", quiet = TRUE)
 library(xml2)
 exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
 class(exchange_rates)
 ```
+```{r install-xml2}
+#| echo: false
+library(xml2)
+exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+class(exchange_rates)
+```
 
+::: {.callout-tip}
+We can use namespacing to access package functions directly, e.g. `xml2::read_xml()`
+:::
+
+:::{.fragment}
 The default repository is CRAN, which has >20,000 packages.
+:::
 
 ## R still has building blocks for programming
 
@@ -173,19 +185,19 @@ statistical software
 
 ### Vectors and matrices
 
-```{r}
-x <- 1:3
+```{r log-x}
+x <- c(1, 5, 7)
 log(x)
 ```
 
-```{r}
+```{r matrix}
 M <- matrix(c(1, 0, 1, 0), nrow = 2, ncol = 2)
 M == 1
 ```
 
 ### Dates
 
-```{r}
+```{r date}
 date_series <- seq.Date(from = as.Date("2025-01-01"), 
                         to = as.Date("2025-01-10"), by = "day")
 date_series - date_series[1]
@@ -194,12 +206,12 @@ date_series - date_series[1]
 
 ### Lists and data frames
 
-```{r}
+```{r list}
 list_data <- list(x = 1:3, M = matrix(1:4))
 lapply(list_data, mean)
 ```
 
-```{r}
+```{r data-frame}
 summary(trees)
 ```
 
@@ -249,7 +261,7 @@ We can easily explore interactively when developing a function
 :::
 
 ::: {.notes}
-skip image 21 as can test groupSort interactively in console
+skip image 14 as can test groupSort interactively in console
 :::
 
 ## Speed up with Compiled Code
@@ -294,7 +306,7 @@ double ManhattanC(NumericVector a, NumericVector b) {
 
 <br>
 
-```{r}
+```{r ManhattanC}
 #| message: false
 Rcpp::sourceCpp("ManhattanC.cpp")
 a <- c(1, 0)
@@ -323,7 +335,7 @@ ManhattanR <- function(a, b){
 
 ### Fortran
 
-```{r}
+```{r quickr}
 library(quickr)
 ManhattanF <- quick(function(a, b){
     declare(type(a = double(NA)),
@@ -400,7 +412,7 @@ Generate the documentation with `devtools::document()`
 If we put the package in a git repos, those with access can install from 
 R, e.g.
 
-```{r}
+```{r install-demopkg}
 #| message: false
 #| cache: true
 remotes::install_github("hturner/demopkg")
@@ -414,7 +426,7 @@ Credentials for private git repos can be set with `gitcreds::set()`
 
 ## Sharing R package binaries
 
-Create an r-developer.r-universe.dev repo on GitHub and add
+Create an `r-developer.r-universe.dev` repo on GitHub and add
 
 ```{.json filename="packages.json"}
 [
@@ -635,16 +647,16 @@ Many options, the following are relatively simple and free
 
 | Route     | R Packages Source | Hosting                  |
 |-----------|-------------------|---------------------------|
-| Posit Cloud Connect | CRAN, Bioconductor, Public GitHub  | Cloud server |
-| shinylive | CRAN, Bioconductor, R-universe  | Self-hosted static HTML, GitHub Pages |
-| shinyapps.io | CRAN, Bioconductor, Public/Private GitHub  | Cloud server|
+| [Posit Cloud Connect](https://connect.posit.cloud) | CRAN, Bioconductor, Public GitHub  | Cloud server |
+| [shinylive](https://posit-dev.github.io/r-shinylive/) | CRAN, Bioconductor, R-universe  | Self-hosted static HTML, GitHub Pages |
+| [shinyapps.io](https://www.shinyapps.io/) | CRAN, Bioconductor, Public/Private GitHub  | Cloud server|
 
 Other options are paid (premium versions of shinyapps.io, Posit Cloud Connect 
-or more work (self-hosted ShinyProxy).
+or more work (self-hosted [ShinyProxy](https://www.shinyproxy.io/)).
 
 ## A Recipe for Shiny App in R Package in Private GitHub
 
-1. Sign up for shinyapps.io.
+1. Sign up for [shinyapps.io](https://www.shinyapps.io/).
 2. Go to Account > Tokens > Show and copy code to run in R
     - Allow access to private GitHub repos via Account > Profile > Update Authentification
 4. Save `app.R` in `inst/shiny` of your R package.
@@ -693,7 +705,7 @@ double Manhattan(const std::vector<double>& a, const std::vector<double>& b) {
 
 ## Interfacing with standard C++ using Rcpp
 
-Within the package source directory run `use_rcpp("Manhattan")`
+Within the package source directory run `usethis::use_rcpp("Manhattan")`
 
 ![](demo36.png){fig-align="center" height=520px}
 
