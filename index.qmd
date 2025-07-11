@@ -39,7 +39,7 @@ In fact...
 <br>
 
 ::: {.fragment}
-> R has a simple goal: To turn ideas into software, quickly and faithfully 
+> S has a simple goal: To turn ideas into software, quickly and faithfully 
 
 -- _John Chambers, Programming with data: A guide to the S language, 
   ISBN 978-0-387-98503-9._
@@ -135,32 +135,6 @@ kmeans(study_data[c("variable1", "variable2")], centers = 2)
 plot(response ~ variable1, data = study_data)
 ```
 
-## Access more functions via R packages
-
-R packages provide additional data structures and functions, e.g.
-
-```{r install-xml2-code}
-#| eval: false
-install.packages("xml2", quiet = TRUE)
-library(xml2)
-exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
-class(exchange_rates)
-```
-```{r install-xml2}
-#| echo: false
-library(xml2)
-exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
-class(exchange_rates)
-```
-
-::: {.callout-tip}
-We can use namespacing to access package functions directly, e.g. `xml2::read_xml()`
-:::
-
-:::{.fragment}
-The default repository is CRAN, which has >20,000 packages.
-:::
-
 ## R still has building blocks for programming
 
 * Basic data types
@@ -220,6 +194,32 @@ vectors and matrices are like arrays in C, but many R functions and operations
 can be applied across the whole vector or matrix at once
 :::
 
+:::
+
+## Access more functions via R packages
+
+R packages provide additional data structures and functions, e.g.
+
+```{r install-xml2-code}
+#| eval: false
+install.packages("xml2", quiet = TRUE)
+library(xml2)
+exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+class(exchange_rates)
+```
+```{r install-xml2}
+#| echo: false
+library(xml2)
+exchange_rates <- read_xml("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+class(exchange_rates)
+```
+
+::: {.callout-tip}
+We can use namespacing to access package functions directly, e.g. `xml2::read_xml()`
+:::
+
+:::{.fragment}
+The default repository is CRAN, which has >20,000 packages.
 :::
 
 ## R is an interpreted language
@@ -304,7 +304,11 @@ double ManhattanC(NumericVector a, NumericVector b) {
 }
 ```
 
-<br>
+:::
+
+## Speeding up with Rcpp (ctd.)
+
+`Rcpp::sourceCpp()` creates an R wrapper around the C++ code
 
 ```{r ManhattanC}
 #| message: false
@@ -313,9 +317,8 @@ a <- c(1, 0)
 ManhattanC(a, a + c(1, 7))
 ```
 
-:::
 
-::: {.fragment}
+::: {.notes}
 **Rcpp** provides data structures and functions to allow us to write R-like C++
 :::
 
@@ -450,6 +453,8 @@ For private packages use `devtools::build()`, plus [win-builder.r-project.org](h
 :::
 
 ::: {.notes}
+You need a GitHub account to host the repository for your packages.json registry. However, the R packages themselves do not need to be under the same account or even on GitHub.
+
 CRAN still needed for package dependencies
 :::
 
@@ -467,10 +472,6 @@ We can keep an interactive workflow with `devtools::load_all()`
 ![](demo30.png){.fragment height=520px}
 
 ![](demo31.png){.fragment height=520px}
-
-![](demo32.png){.fragment height=520px}
-
-![](demo33.png){.fragment height=520px}
 :::
 
 ## Designing an interface for non-coders
@@ -651,7 +652,7 @@ Many options, the following are relatively simple and free
 | [shinylive](https://posit-dev.github.io/r-shinylive/) | CRAN, Bioconductor, R-universe  | Self-hosted static HTML, GitHub Pages |
 | [shinyapps.io](https://www.shinyapps.io/) | CRAN, Bioconductor, Public/Private GitHub  | Cloud server|
 
-Other options are paid (premium versions of shinyapps.io, Posit Cloud Connect 
+Other options are paid (premium versions of shinyapps.io, Posit Cloud Connect) 
 or more work (self-hosted [ShinyProxy](https://www.shinyproxy.io/)).
 
 ## A Recipe for Shiny App in R Package in Private GitHub
