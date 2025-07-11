@@ -34,14 +34,14 @@ In fact...
 
 > no developer would mistake R for a programming language
 
--- _Simon Urbanek, R Core developer, R Journal 13(2), 22-24, [10.32614/RJ-2021-111](http://dx.doi.org/110.32614/RJ-2021-111)_
+-- _Simon Urbanek, R Journal 13(2), 22-24, 2021 [10.32614/RJ-2021-111](http://dx.doi.org/110.32614/RJ-2021-111)_
 
 <br>
 
 ::: {.fragment}
 > S has a simple goal: To turn ideas into software, quickly and faithfully 
 
--- _John Chambers, Programming with data: A guide to the S language, 
+-- _John Chambers, Programming with data: A guide to the S language, 1998,
   ISBN 978-0-387-98503-9._
 :::
 
@@ -609,7 +609,7 @@ server <- function(input, output, session) {
 ```
 
 :::{.callout-tip .fragment}
-Could pass `ui` to Shiny assistant https://gallery.shinyapps.io/assistant 
+Could pass `ui` to Shiny Assistant https://gallery.shinyapps.io/assistant 
 to get an initial draft for `server`
 :::
 
